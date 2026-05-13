@@ -51,7 +51,7 @@ public class EmpruntController {
     }
 
     //Liste tous les emprunts pour voir l'activité globale de la bibliothèque
-    @GetMapping("/statistiques")
+    @GetMapping
     @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<List<Emprunt>> getAllEmprunts() {
         return ResponseEntity.ok(empruntService.findAll());
