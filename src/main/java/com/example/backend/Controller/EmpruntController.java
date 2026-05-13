@@ -17,10 +17,7 @@ public class EmpruntController {
     @Autowired
     private EmpruntService empruntService;
 
-    /**
-     * EFFECTUER UN EMPRUNT
-     * Un lecteur demande à emprunter un livre.
-     */
+    //Quand un lecteur demande a emprunter un livre
     @PostMapping("/loan")
     @PreAuthorize("hasRole('LECTEUR')")
     public ResponseEntity<Emprunt> emprunterLivre(
