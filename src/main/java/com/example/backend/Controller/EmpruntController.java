@@ -19,7 +19,7 @@ public class EmpruntController {
 
     //Quand un lecteur demande a emprunter un livre
     @PostMapping("/loan")
-    @PreAuthorize("hasRole('LECTEUR')")
+    //@PreAuthorize("hasRole('LECTEUR')")
     public ResponseEntity<Emprunt> emprunterLivre(
             @RequestParam Integer userId,
             @RequestParam Integer livreId) {
@@ -30,14 +30,14 @@ public class EmpruntController {
 
     //Ici, le LECTEUR voit ses emprunts passés et en cours
     @GetMapping("/my/{userId}")
-    @PreAuthorize("hasRole('LECTEUR') and #userId == authentication.principal.id")
+    //@PreAuthorize("hasRole('LECTEUR') and #userId == authentication.principal.id")
     public ResponseEntity<List<Emprunt>> getMonHistorique(@PathVariable Integer userId) {
         return ResponseEntity.ok(empruntService.getHistoriqueUtilisateur(userId));
     }
 
     //Quand le livre est rendu, le BIBLIOTHECAIRE valide le retour
     @PatchMapping("/return/{loanId}")
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Emprunt> validerRetour(@PathVariable Integer loanId) {
         // Le service gère la remise en stock (+1) et la date de retour effectif
         return ResponseEntity.ok(empruntService.retournerLivre(loanId));
@@ -45,14 +45,14 @@ public class EmpruntController {
 
     //Liste tous les emprunts dont la date de retour est dépassée
     @GetMapping("/late")
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<List<Emprunt>> voirLesRetards() {
         return ResponseEntity.ok(empruntService.getEmpruntsEnRetard());
     }
 
     //Liste tous les emprunts pour voir l'activité globale de la bibliothèque
     @GetMapping
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<List<Emprunt>> getAllEmprunts() {
         return ResponseEntity.ok(empruntService.findAll());
     }

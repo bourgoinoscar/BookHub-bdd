@@ -24,21 +24,21 @@ public class UtilisateurController {
 
     //L'admin peut voir tous les LECTEUR et BIBLIOTHECAIRE
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Utilisateur>> getAllUtilisateurs() {
         return ResponseEntity.ok(utilisateurService.findAll());
     }
 
     //Ici, l'amdin peut voir le profile de n'importe qui, l'utilisateur propriétaire peut acceder à son profile
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    //@PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<Utilisateur> getProfil(@PathVariable Integer id) {
         return ResponseEntity.ok(utilisateurService.getProfil(id));
     }
 
     //L'admin pour l'utilisateur propriétaire peuvent modifier le profile
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    //@PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<Utilisateur> modifierProfil(
             @PathVariable Integer id,
             @RequestBody Utilisateur nouveauxDetails) {
@@ -49,14 +49,14 @@ public class UtilisateurController {
 
     // Seul l'admin peut modifier un role, le passer de LECTEUR à BIBLIOTHECAIRE
     @PatchMapping("/{id}/role")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Utilisateur> changerRole(@PathVariable Integer id, @RequestParam Integer roleId) {
         return ResponseEntity.ok(utilisateurService.changerRole(id, roleId));
     }
 
     //Pour supprimer un Utilisateur, seul l'admin le peut
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerUtilisateur(@PathVariable Integer id) {
         utilisateurService.supprimerCompte(id);
         return ResponseEntity.noContent().build();

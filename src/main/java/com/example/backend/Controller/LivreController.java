@@ -58,14 +58,14 @@ public class LivreController {
 
     // Seule le BIBLIOTHECAIRE peut ajouter un livre
     @PostMapping
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Livre> ajouterLivre(@RequestBody Livre livre) {
         return ResponseEntity.status(HttpStatus.CREATED).body(livreService.save(livre));
     }
 
     //Modifier un livre (info ou quandtité)
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Livre> modifierLivre(@PathVariable Integer id, @RequestBody Livre livreDetails) {
         // même logique de maj que dans le Service
         return ResponseEntity.ok(livreService.update(id, livreDetails));
@@ -73,7 +73,7 @@ public class LivreController {
 
     //Comme demandé, seul le BIBLIOTHECAIRE peut supprimer un livre
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Void> supprimerLivre(@PathVariable Integer id) {
         livreService.delete(id);
         return ResponseEntity.noContent().build();

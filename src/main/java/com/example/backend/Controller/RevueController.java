@@ -19,7 +19,7 @@ public class RevueController {
 
     //Seul le lecteur peut mettre une note et un commentaire
     @PostMapping
-    @PreAuthorize("hasRole('LECTEUR')")
+    //@PreAuthorize("hasRole('LECTEUR')")
     public ResponseEntity<Revue> laisserUnAvis(
             @RequestParam Integer userId,
             @RequestParam Integer livreId,
@@ -35,7 +35,7 @@ public class RevueController {
 
     //Le lecteur peut modifier sa note ou son commentaire
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('LECTEUR')")
+    //@PreAuthorize("hasRole('LECTEUR')")
     public ResponseEntity<Revue> modifierMonAvis(
             @PathVariable Integer id,
             @RequestParam Integer note,
@@ -54,7 +54,7 @@ public class RevueController {
 
     //Supprimer un commentaire inaproprié par un bibliothécaire
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasAnyRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Void> supprimerAvis(@PathVariable Integer id) {
         revueService.deleteRevue(id);
         return ResponseEntity.noContent().build();

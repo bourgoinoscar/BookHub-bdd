@@ -20,14 +20,14 @@ public class ReservationController {
 
     //Le lecteur peut consulter ses réservations
     @GetMapping("/my/{userId}")
-    @PreAuthorize("hasRole('LECTEUR') and #userId == authentication.principal.id")
+    //@PreAuthorize("hasRole('LECTEUR') and #userId == authentication.principal.id")
     public ResponseEntity<List<Reservation>> getMesReservations(@PathVariable Integer userId) {
         return ResponseEntity.ok(reservationService.getReservationsByUtilisateur(userId));
     }
 
     //Même si c'est le lecteur qui veut réserver un livre, c'est bien le bibliothecaire qui le fait
     @PostMapping
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Reservation> creerReservation(
             @RequestParam Integer userId,
             @RequestParam Integer livreId) {
@@ -38,7 +38,7 @@ public class ReservationController {
 
     //Comme c'est au bibliothecaire de faire la réservation, c'est aussi à lui d'annuler la resa
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Void> annulerMaReservation(@PathVariable Integer id) {
         reservationService.annulerReservation(id);
         return ResponseEntity.noContent().build();
@@ -54,7 +54,7 @@ public class ReservationController {
 
     //Le bibliothecaire gère la file d'attente d'un ouvrage précis pour les résa
     @GetMapping("/livre/{livreId}")
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<List<Reservation>> getFileAttente(@PathVariable Integer livreId, StatutResa statut) {
         return ResponseEntity.ok(reservationService.getReservationsByLivre(livreId, statut));
     }

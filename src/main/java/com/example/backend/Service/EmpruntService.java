@@ -74,6 +74,11 @@ public class EmpruntService {
         return empruntRepository.findAll();
     }
 
+    public Emprunt findById(Integer id) {
+        return empruntRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Emprunt avec l'ID " + id + " est introuvable"));
+    }
+
     public List<Emprunt> getEmpruntsEnRetard() {
         return empruntRepository.findByDateRetourPrevuBeforeAndDateRetourEffectifIsNull(LocalDate.now());
     }
