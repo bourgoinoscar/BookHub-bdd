@@ -59,20 +59,20 @@ public class LivreController {
 
 
     @PostMapping
-    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    @PreAuthorize("hasAuthority('BIBLIOTHECAIRE')")
     public ResponseEntity<LivreDTO> ajouterLivre(@RequestBody LivreDTO livreDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(livreService.save(livreDto));
     }
 
 
     @PutMapping("/{id}")
-    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    @PreAuthorize("hasAuthority('BIBLIOTHECAIRE')")
     public ResponseEntity<LivreDTO> modifierLivre(@PathVariable Integer id, @RequestBody LivreDTO livreDtoDetails) {
         return ResponseEntity.ok(livreService.update(id, livreDtoDetails));
     }
 
     @DeleteMapping("/{id}")
-    //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
+    @PreAuthorize("hasAuthority('BIBLIOTHECAIRE')")
     public ResponseEntity<Void> supprimerLivre(@PathVariable Integer id) {
         livreService.delete(id);
         return ResponseEntity.noContent().build();
