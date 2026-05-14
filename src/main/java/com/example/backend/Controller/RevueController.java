@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Dto.RevueDTO;
 import com.example.backend.Entity.Revue;
 import com.example.backend.Service.RevueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,33 +21,36 @@ public class RevueController {
     //Seul le lecteur peut mettre une note et un commentaire
     @PostMapping
     //@PreAuthorize("hasRole('LECTEUR')")
-    public ResponseEntity<Revue> laisserUnAvis(
+    public ResponseEntity<RevueDTO> laisserUnAvis(
             @RequestParam Integer userId,
             @RequestParam Integer livreId,
-            @RequestParam Integer note,
-            @RequestParam String commentaire) {
+            @RequestBody RevueDTO revue) {
 
         // Sécurité : Un utilisateur ne devrait pouvoir poster qu'en son nom
         // (Vérification supplémentaire possible ici via authentication.principal)
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(revueService.laisserUnAvis(userId, livreId, note, commentaire));
+                .body(revueService.laisserUnAvis(userId, livreId, revue));
     }
 
     //Le lecteur peut modifier sa note ou son commentaire
     @PutMapping("/{id}")
     //@PreAuthorize("hasRole('LECTEUR')")
-    public ResponseEntity<Revue> modifierMonAvis(
+    public ResponseEntity<RevueDTO> modifierMonAvis(
             @PathVariable Integer id,
-            @RequestParam Integer note,
-            @RequestParam String commentaire) {
+            @RequestBody RevueDTO revue) {
 
-        return ResponseEntity.ok(revueService.updateRevue(id, note, commentaire));
+        return ResponseEntity.ok(revueService.updateRevue(id,revue));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RevueDTO>> findAll(){
+        return ResponseEntity.ok(revueService.findAll());
     }
 
     //Voir les avis d'un livre pour tout profils
-    @GetMapping("/livre/{livreId}")
-    public ResponseEntity<List<Revue>> getRevuesParLivre(@PathVariable Integer livreId) {
+    @GetMapping("/book/{livreId}")
+    public ResponseEntity<List<RevueDTO>> getRevuesParLivre(@PathVariable Integer livreId) {
         return ResponseEntity.ok(revueService.getRevuesByLivre(livreId));
     }
 

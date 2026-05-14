@@ -1,8 +1,10 @@
 package com.example.backend.Service;
 
+import com.example.backend.Dto.EmpruntDTO;
 import com.example.backend.Entity.Emprunt;
 import com.example.backend.Entity.Livre;
 import com.example.backend.Entity.Utilisateur;
+import com.example.backend.Mapper.EmpruntMapper;
 import com.example.backend.Repository.IEmpruntRepository;
 import com.example.backend.Repository.ILivreRepository;
 import com.example.backend.Repository.IUtilisateurRepository;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmpruntService {
@@ -27,7 +30,7 @@ public class EmpruntService {
 
 
     @Transactional // Le stock n'est réduit que si l'emprunt est crée
-    public Emprunt effectuerEmprunt(Integer userId, Integer livreId) {
+    public EmpruntDTO effectuerEmprunt(Integer userId, Integer livreId) {
         Utilisateur user = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         Livre livre = livreRepository.findById(livreId)
@@ -41,49 +44,60 @@ public class EmpruntService {
         emprunt.setUtilisateur(user);
         emprunt.setLivre(livre);
         emprunt.setDateEmprunt(LocalDate.now());
+        emprunt.setDateRetourPrevu(LocalDate.now().plusDays(14)); // Ajout de 14 jours sur la date du jour
 
-        // Nous sommes parti sur 14j d'emprunt, comme marqué sur l'ennoncé
-        emprunt.setDateRetourPrevu(LocalDate.now().plusDays(14));
-
+        // Mise à jour du stock
         livre.setQuantite(livre.getQuantite() - 1);
         livreRepository.save(livre);
 
-        return empruntRepository.save(emprunt);
+        Emprunt savedEmprunt = empruntRepository.save(emprunt);
+        return EmpruntMapper.toDTO(savedEmprunt);
     }
 
     @Transactional
-    public Emprunt retournerLivre(Integer empruntId) {
+    public EmpruntDTO retournerLivre(Integer empruntId) {
         Emprunt emprunt = empruntRepository.findById(empruntId)
                 .orElseThrow(() -> new RuntimeException("Emprunt introuvable"));
 
         if (emprunt.getDateRetourEffectif() != null) {
             throw new RuntimeException("Ce livre a déjà été retourné.");
         }
-        // Date de retour sauvegardé
+
         emprunt.setDateRetourEffectif(LocalDate.now());
 
-        //On remet le livre dans le stock
+        // On remet le livre dans le stock
         Livre livre = emprunt.getLivre();
         livre.setQuantite(livre.getQuantite() + 1);
         livreRepository.save(livre);
 
-        return empruntRepository.save(emprunt);
+        Emprunt updatedEmprunt = empruntRepository.save(emprunt);
+        return EmpruntMapper.toDTO(updatedEmprunt);
     }
 
-    public List<Emprunt> findAll() {
-        return empruntRepository.findAll();
+    public List<EmpruntDTO> findAll() {
+        return empruntRepository.findAll()
+                .stream()
+                .map(EmpruntMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Emprunt findById(Integer id) {
-        return empruntRepository.findById(id)
+    public EmpruntDTO findById(Integer id) {
+        Emprunt emprunt = empruntRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Emprunt avec l'ID " + id + " est introuvable"));
+        return EmpruntMapper.toDTO(emprunt);
     }
 
-    public List<Emprunt> getEmpruntsEnRetard() {
-        return empruntRepository.findByDateRetourPrevuBeforeAndDateRetourEffectifIsNull(LocalDate.now());
+    public List<EmpruntDTO> getEmpruntsEnRetard() {
+        return empruntRepository.findByDateRetourPrevuBeforeAndDateRetourEffectifIsNull(LocalDate.now())
+                .stream()
+                .map(EmpruntMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<Emprunt> getHistoriqueUtilisateur(Integer userId) {
-        return empruntRepository.findByUtilisateurIdAndDateRetourEffectifIsNull(userId);
+    public List<EmpruntDTO> getHistoriqueUtilisateur(Integer userId) {
+        return empruntRepository.findByUtilisateurId(userId) //
+                .stream()
+                .map(EmpruntMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

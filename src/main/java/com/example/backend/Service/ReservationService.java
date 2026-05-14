@@ -1,9 +1,11 @@
 package com.example.backend.Service;
 
+import com.example.backend.Dto.ReservationDTO;
 import com.example.backend.Entity.Livre;
 import com.example.backend.Entity.Reservation;
 import com.example.backend.Entity.Utilisateur;
 import com.example.backend.Enum.StatutResa;
+import com.example.backend.Mapper.ReservationMapper;
 import com.example.backend.Repository.ILivreRepository;
 import com.example.backend.Repository.IReservationRepository;
 import com.example.backend.Repository.IUtilisateurRepository;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -25,7 +28,7 @@ public class ReservationService {
     private IUtilisateurRepository utilisateurRepository;
 
 
-    public Reservation creerReservation(Integer userId, Integer livreId) {
+    public ReservationDTO creerReservation(Integer userId, Integer livreId) {
         Utilisateur user = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         Livre livre = livreRepository.findById(livreId)
@@ -34,33 +37,43 @@ public class ReservationService {
         Reservation reservation = new Reservation();
         reservation.setUtilisateur(user);
         reservation.setLivre(livre);
-        reservation.setStatut(StatutResa.EN_ATTENTE); // Statut initial par défaut
+        reservation.setStatut(StatutResa.EN_ATTENTE);
 
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        return ReservationMapper.toDTO(saved);
     }
 
 
-    public void annulerReservation(Integer id) {
+    public ReservationDTO annulerReservation(Integer id) {
         Reservation res = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Réservation introuvable"));
 
         res.setStatut(StatutResa.ANNULEE);
-        reservationRepository.save(res);
+        Reservation updated = reservationRepository.save(res);
+        return ReservationMapper.toDTO(updated);
     }
 
-    public Reservation validerReservation(Integer id) {
+    public ReservationDTO validerReservation(Integer id) {
         Reservation res = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Réservation introuvable"));
 
         res.setStatut(StatutResa.VALIDEE);
-        return reservationRepository.save(res);
+        Reservation updated = reservationRepository.save(res);
+        return ReservationMapper.toDTO(updated);
     }
 
-    public List<Reservation> getReservationsByUtilisateur(Integer userId) {
-        return reservationRepository.findByUtilisateurId(userId);
+    public List<ReservationDTO> getReservationsByUtilisateur(Integer userId) {
+        return reservationRepository.findByUtilisateurId(userId)
+                .stream()
+                .map(ReservationMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<Reservation> getReservationsByLivre(Integer livreId, StatutResa statut) {
-        return reservationRepository.findByLivreIdAndStatut(livreId, statut);
+    public List<ReservationDTO> getReservationsByLivre(Integer livreId) {
+
+        return reservationRepository.findByLivreId(livreId)
+                .stream()
+                .map(ReservationMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

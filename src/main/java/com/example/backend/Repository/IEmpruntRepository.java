@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,6 @@ public interface IEmpruntRepository extends JpaRepository<Emprunt, Integer> {
 
     // Trouver tous les emprunts en retard (date_retour_prevu dépassée et non rendu)
     List<Emprunt> findByDateRetourPrevuBeforeAndDateRetourEffectifIsNull(LocalDate date);
+
+    List<Emprunt> findByUtilisateurId(Integer userId);
 }

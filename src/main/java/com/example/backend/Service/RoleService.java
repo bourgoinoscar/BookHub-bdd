@@ -1,11 +1,16 @@
 package com.example.backend.Service;
 
+import com.example.backend.Dto.RoleDTO;
+import com.example.backend.Entity.Livre;
 import com.example.backend.Entity.Role;
+import com.example.backend.Mapper.LivreMapper;
+import com.example.backend.Mapper.RoleMapper;
 import com.example.backend.Repository.IRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleService {
@@ -13,8 +18,8 @@ public class RoleService {
     @Autowired
     private IRoleRepository roleRepository;
 
-    public Role creerRole(String nomRole) {
-        String nomClean = nomRole.toUpperCase().trim();
+    public RoleDTO save(RoleDTO roleDTO) {
+        String nomClean = roleDTO.nom().toUpperCase().trim();
 
         if (roleRepository.existsByNom(nomClean)) {
             throw new RuntimeException("Le rôle " + nomClean + " existe déjà.");
@@ -22,19 +27,28 @@ public class RoleService {
 
         Role role = new Role();
         role.setNom(nomClean);
-        return roleRepository.save(role);
+
+        Role saved = roleRepository.save(role);
+        return RoleMapper.toDTO(saved);
     }
 
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+    public List<RoleDTO> getAllRoles() {
+        return roleRepository.findAll().stream().map(RoleMapper::toDTO).collect(Collectors.toList());
     }
 
-    public Role getByNom(String nom) {
-        return roleRepository.findByNom(nom.toUpperCase())
+    public RoleDTO getByNom(String nom) {
+        Role role = roleRepository.findByNom(nom.toUpperCase())
                 .orElseThrow(() -> new RuntimeException("Rôle '" + nom + "' introuvable."));
+        return RoleMapper.toDTO(role);
     }
 
-    public void supprimerRole(Integer id) {
+    public RoleDTO getById(Integer id){
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rôle non trouvé"));
+        return RoleMapper.toDTO(role);
+    }
+
+    public void delete(Integer id) {
         if (!roleRepository.existsById(id)) {
             throw new RuntimeException("Rôle introuvable.");
         }

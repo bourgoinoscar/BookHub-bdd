@@ -2,7 +2,9 @@ package com.example.backend.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -18,9 +20,9 @@ public class Utilisateur {
     @NotNull
     private String prenom;
     @NotNull
-    private Date dateNaissance;
+    private LocalDate dateNaissance;
     @NotNull
-    private int tel;
+    private String tel;
     @NotNull
     private String email;
     @NotNull
@@ -37,7 +39,7 @@ public class Utilisateur {
     public Utilisateur() {
     }
 
-    public Utilisateur(Integer id, String nom, String prenom, Date dateNaissance, int tel, String email, String password, Role role, List<Emprunt> emprunts) {
+    public Utilisateur(Integer id, String nom, String prenom, LocalDate dateNaissance, String tel, String email, String password, Role role, List<Emprunt> emprunts) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
@@ -73,19 +75,19 @@ public class Utilisateur {
         this.prenom = prenom;
     }
 
-    public Date getDateNaissance() {
+    public LocalDate getDateNaissance() {
         return dateNaissance;
     }
 
-    public void setDateNaissance(Date dateNaissance) {
+    public void setDateNaissance(LocalDate dateNaissance) {
         this.dateNaissance = dateNaissance;
     }
 
-    public int getTel() {
+    public String getTel() {
         return tel;
     }
 
-    public void setTel(int tel) {
+    public void setTel(String tel) {
         this.tel = tel;
     }
 

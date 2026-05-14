@@ -3,6 +3,7 @@ package com.example.backend.Config;
 import com.example.backend.Entity.*;
 import com.example.backend.Repository.*;
 import com.example.backend.Enum.StatutResa;
+import org.hibernate.type.descriptor.java.LocalDateJavaType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
@@ -43,10 +44,10 @@ public class DataInitializer implements CommandLineRunner {
         Role lecteurRole = roleRepo.save(new Role(null, "LECTEUR", null));
 
         // 3. CRÉATION DES UTILISATEURS
-        Utilisateur admin = userRepo.save(new Utilisateur(null, "Boss", "Hugo", new Date(), 0601020304, "admin@test.com", "pass", adminRole, null));
-        Utilisateur biblio = userRepo.save(new Utilisateur(null, "Curie", "Marie", new Date(), 0611223344, "marie@biblio.com", "pass", biblioRole, null));
-        Utilisateur lecteur1 = userRepo.save(new Utilisateur(null, "Dupont", "Jean", new Date(), 677889900, "jean@mail.com", "pass", lecteurRole, null));
-        Utilisateur lecteur2 = userRepo.save(new Utilisateur(null, "Smith", "Jane", new Date(), 0655443322, "jane@mail.com", "pass", lecteurRole, null));
+        Utilisateur admin = userRepo.save(new Utilisateur(null, "Boss", "Hugo", LocalDate.of(2000,12,31), "0601020304", "admin@test.com", "pass", adminRole, null));
+        Utilisateur biblio = userRepo.save(new Utilisateur(null, "Curie", "Marie", LocalDate.of(1997,10,02), "0611223344", "marie@biblio.com", "pass", biblioRole, null));
+        Utilisateur lecteur1 = userRepo.save(new Utilisateur(null, "Dupont", "Jean", LocalDate.of(1968,06,15), "0677889900", "jean@mail.com", "pass", lecteurRole, null));
+        Utilisateur lecteur2 = userRepo.save(new Utilisateur(null, "Smith", "Jane", LocalDate.of(2010,01,4), "0655443322", "jane@mail.com", "pass", lecteurRole, null));
 
         // 4. CRÉATION DES LIVRES (Scénarios variés)
         Livre l1 = livreRepo.save(new Livre(null, "Le Seigneur des Anneaux", "Tolkien", "Fantasy", "Un anneau magique...", "ISBN001", 5, LocalDate.now(), null));

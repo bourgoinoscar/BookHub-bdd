@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Dto.LivreDTO;
 import com.example.backend.Entity.Livre;
 import com.example.backend.Service.LivreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,20 @@ public class LivreController {
 
     //Accès du catalogue par tous, même non connecté
     @GetMapping
-    public ResponseEntity<List<Livre>> getAllLivres() {
+    public ResponseEntity<List<LivreDTO>> getAllLivres() {
         return ResponseEntity.ok(livreService.getAll());
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> rechercherLivre(   
+    public ResponseEntity<List<LivreDTO>> rechercherLivre(
             @RequestParam(required = false) String titre,
             @RequestParam(required = false) String auteur,
             @RequestParam(required = false) String categorie,
             @RequestParam(required = false) String isbn) {
 
         if (isbn != null && !isbn.isEmpty()) {
-            return ResponseEntity.ok(Collections.singletonList(livreService.getByIsbn(isbn)));
+            LivreDTO dto = livreService.getByIsbn(isbn);
+            return ResponseEntity.ok(Collections.singletonList(dto));
         }
 
         if (titre != null && !titre.isEmpty()) {
@@ -47,31 +49,28 @@ public class LivreController {
             return ResponseEntity.ok(livreService.getByCategorie(categorie));
         }
 
-        //Si aucun de ces paramètres n'est rempli, renvoie le catalogue entier par défaut
         return ResponseEntity.ok(livreService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Livre> getLivreById(@PathVariable Integer id) {
+    public ResponseEntity<LivreDTO> getLivreById(@PathVariable Integer id) {
         return ResponseEntity.ok(livreService.getById(id));
     }
 
-    // Seule le BIBLIOTHECAIRE peut ajouter un livre
+
     @PostMapping
     //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
-    public ResponseEntity<Livre> ajouterLivre(@RequestBody Livre livre) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(livreService.save(livre));
+    public ResponseEntity<LivreDTO> ajouterLivre(@RequestBody LivreDTO livreDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(livreService.save(livreDto));
     }
 
-    //Modifier un livre (info ou quandtité)
+
     @PutMapping("/{id}")
     //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
-    public ResponseEntity<Livre> modifierLivre(@PathVariable Integer id, @RequestBody Livre livreDetails) {
-        // même logique de maj que dans le Service
-        return ResponseEntity.ok(livreService.update(id, livreDetails));
+    public ResponseEntity<LivreDTO> modifierLivre(@PathVariable Integer id, @RequestBody LivreDTO livreDtoDetails) {
+        return ResponseEntity.ok(livreService.update(id, livreDtoDetails));
     }
 
-    //Comme demandé, seul le BIBLIOTHECAIRE peut supprimer un livre
     @DeleteMapping("/{id}")
     //@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public ResponseEntity<Void> supprimerLivre(@PathVariable Integer id) {

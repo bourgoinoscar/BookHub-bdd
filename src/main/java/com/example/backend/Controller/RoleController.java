@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Dto.RoleDTO;
 import com.example.backend.Entity.Role;
 import com.example.backend.Service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,28 +20,33 @@ public class RoleController {
     //Comme demandé, seul l'admin peut créer de nouveaux rôles
     @PostMapping
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Role> createRole(@RequestBody String nomRole) {
-        return ResponseEntity.ok(roleService.creerRole(nomRole));
+    public ResponseEntity<RoleDTO> createRole(@RequestBody RoleDTO roleDTO) {
+        return ResponseEntity.ok(roleService.save(roleDTO));
     }
 
     //Seul l'admin peut voir la liste des rôles
     @GetMapping
     //@PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<List<Role>> getAllRoles() {
+    public ResponseEntity<List<RoleDTO>> getAllRoles() {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
-    @GetMapping("/{nom}")
+    @GetMapping("/searchByName/{nom}") // searchByName est la pour différencier le getRoleByName et le getRoleByID
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Role> getRoleByName(@PathVariable String nom) {
+    public ResponseEntity<RoleDTO> getRoleByName(@PathVariable String nom) {
         return ResponseEntity.ok(roleService.getByNom(nom));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Integer id){
+        return ResponseEntity.ok(roleService.getById(id));
     }
 
     //Comme demandé, seul l'admin peut supprimer un rôle
     @DeleteMapping("/{id}")
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteRole(@PathVariable Integer id) {
-        roleService.supprimerRole(id);
+        roleService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
