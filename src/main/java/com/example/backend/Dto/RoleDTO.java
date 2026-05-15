@@ -1,4 +1,6 @@
 package com.example.backend.Dto;
 
-public record RoleDTO(Integer id, String nom) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record RoleDTO(@Schema(accessMode = Schema.AccessMode.READ_ONLY)Integer id, @Schema(description = "Nom du rôle", example = "ARCHIVISTE") String nom) {
 }

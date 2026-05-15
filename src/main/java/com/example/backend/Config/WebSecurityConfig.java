@@ -21,6 +21,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity // Permet d'utiliser @PreAuthorize
@@ -67,6 +69,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll() // Autorise la console H2
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated() // Bloque le reste
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
@@ -84,14 +87,14 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Origine de ton front Angular
-        configuration.setAllowedOrigins(java.util.List.of("http://localhost:4200"));
+        // Origine du front
+        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500", "http://localhost:5500","http://localhost:4200"));
 
         // Méthodes autorisées
-        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // Headers autorisés (Angular envoie souvent Content-Type et Authorization)
-        configuration.setAllowedHeaders(java.util.Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
+        // Headers autorisés
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
 
         // Headers que le front est autorisé à lire dans la réponse
         configuration.setExposedHeaders(java.util.Arrays.asList("Authorization"));
