@@ -1,6 +1,3 @@
-Lien Swagger : http://localhost:8080/swagger-ui/index.html#/
-
-
 # BookHub - API Backend
 
 BookHub est une application Spring Boot de gestion de bibliothèque et de catalogue de livres. L'API permet de gérer le cycle de vie complet des emprunts, des réservations de livres, des avis d'utilisateurs ainsi que le contrôle d'accès basé sur des rôles spécifiques (**LECTEUR**, **BIBLIOTHECAIRE**, **ADMIN**).
@@ -57,15 +54,15 @@ Pour exécuter ce projet localement, vous devez avoir installé :
 
 ## Installation et Démarrage
 
-Cloner le projet
-git clone https://github//votre-compte/bookhub-backend.git
+### 1 . Cloner le projet
+git clone https://github.com/bourgoinoscar/BookHub-bdd.git
 cd bookhub-backend
 
 
-Compiler et lancer l'application :
+### 2. Compiler et lancer l'application :
 ./mvnw spring-boot:run
 
-Documentation de l'API & Endpoints
+## Documentation de l'API & Endpoints
 Une fois l'application démarrée, la documentation interactive Swagger UI est accessible pour tester l'ensemble des routes (y compris l'envoi du Token JWT en Header) :
 
 http://localhost:8080/swagger-ui/index.html

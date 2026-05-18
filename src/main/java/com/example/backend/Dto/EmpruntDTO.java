@@ -9,7 +9,7 @@ public record EmpruntDTO( @Schema(accessMode = Schema.AccessMode.READ_ONLY) Inte
                           @Schema(accessMode = Schema.AccessMode.READ_ONLY) LocalDate dateRetourPrevu,
                           @Schema(accessMode = Schema.AccessMode.READ_ONLY) LocalDate dateRetourEffectif,
                           @Schema(accessMode = Schema.AccessMode.READ_ONLY) Integer utilisateurId,
-                          @Schema(accessMode = Schema.AccessMode.READ_ONLY) String nomUtilisateur,
+                          @Schema(accessMode = Schema.AccessMode.READ_ONLY) String utilisateurNom,
                           @Schema(accessMode = Schema.AccessMode.READ_ONLY) Integer livreId,
                           @Schema(accessMode = Schema.AccessMode.READ_ONLY) String titreLivre) {
 }

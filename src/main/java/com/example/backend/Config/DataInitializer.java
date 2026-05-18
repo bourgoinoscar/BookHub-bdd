@@ -57,6 +57,8 @@ public class DataInitializer implements CommandLineRunner {
         Livre l2 = livreRepo.save(new Livre(null, "1984", "George Orwell", "Dystopie", "Big Brother watching...", "ISBN002", 0, LocalDate.now(), null)); // STOCK VIDE
         Livre l3 = livreRepo.save(new Livre(null, "Le Petit Prince", "St-Exupéry", "Conte", "Dessine-moi un mouton", "ISBN003", 2, LocalDate.now(), null));
         Livre l4 = livreRepo.save(new Livre(null, "Clean Code", "Robert Martin", "Tech", "Apprendre à coder propre", "ISBN004", 1, LocalDate.now(), null));
+        Livre l5 = livreRepo.save(new Livre(null, "2024", "George Orwell", "Conte", "Dessine-moi un futur", "ISBN005", 2, LocalDate.now(), null));
+        Livre l6 = livreRepo.save(new Livre(null, "La Servante écarlate", "Margaret Atwood", "Dystopie", "Dans une société du futur, la République de Gilead, les femmes ont perdu tous leurs droits et sont entièrement soumises aux hommes....", "ISBN006", 2, LocalDate.now(), null));
 
         // 5. CRÉATION DES EMPRUNTS (Test des dates et retards)
         // Emprunt terminé (rendu à l'heure)
