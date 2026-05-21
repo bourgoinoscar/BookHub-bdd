@@ -28,8 +28,14 @@ public class Livre {
     @NotNull
     private LocalDate dateAjout;
 
-    @OneToMany(mappedBy = "livre")
+    @OneToMany(mappedBy = "livre", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Emprunt> emprunts;
+
+    @OneToMany(mappedBy = "livre", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations;
+
+    @OneToMany(mappedBy = "livre", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Revue> revues;
 
     @PrePersist
     protected void onCreate() {
@@ -127,12 +133,12 @@ public class Livre {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Livre livre = (Livre) o;
-        return quantite == livre.quantite && Objects.equals(id, livre.id) && Objects.equals(titre, livre.titre) && Objects.equals(auteur, livre.auteur) && Objects.equals(categorie, livre.categorie) && Objects.equals(resume, livre.resume) && Objects.equals(isbn, livre.isbn) && Objects.equals(dateAjout, livre.dateAjout) && Objects.equals(emprunts, livre.emprunts);
+        return quantite == livre.quantite && Objects.equals(id, livre.id) && Objects.equals(titre, livre.titre) && Objects.equals(auteur, livre.auteur) && Objects.equals(categorie, livre.categorie) && Objects.equals(resume, livre.resume) && Objects.equals(isbn, livre.isbn) && Objects.equals(dateAjout, livre.dateAjout);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, titre, auteur, categorie, resume, isbn, quantite, dateAjout, emprunts);
+        return Objects.hash(id, titre, auteur, categorie, resume, isbn, quantite, dateAjout);
     }
 
     @Override
@@ -146,7 +152,6 @@ public class Livre {
                 ", isbn='" + isbn + '\'' +
                 ", quantite=" + quantite +
                 ", dateAjout=" + dateAjout +
-                ", emprunts=" + emprunts +
                 '}';
     }
 }

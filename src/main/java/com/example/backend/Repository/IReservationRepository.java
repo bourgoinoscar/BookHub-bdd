@@ -11,5 +11,5 @@ import java.util.List;
 public interface IReservationRepository extends JpaRepository<Reservation, Integer> {
 
     List<Reservation> findByUtilisateurId(Integer utilisateurId);
-    List<Reservation> findByLivreIdAndStatut(Integer livreId, StatutResa statut);
+    List<Reservation> findByLivreId(Integer livreId);
 }

@@ -1,64 +1,114 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Dto.Securite.JwtResponse;
+import com.example.backend.Dto.Securite.LoginRequest;
+import com.example.backend.Dto.UtilisateurDTO;
 import com.example.backend.Entity.Utilisateur;
+import com.example.backend.Securite.JwtUtils;
 import com.example.backend.Service.UtilisateurService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Tag(name = "Utilisateurs", description = "Gestion des utilisateurs")
 @RequestMapping("/api/auth")
 public class UtilisateurController {
 
     @Autowired
     private UtilisateurService utilisateurService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Operation(summary = "Authentification", description = "Fournit l'email et le mot de passe pour recevoir un token JWT.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Authentification réussie"),
+            @ApiResponse(responseCode = "401", description = "Identifiants invalides")
+    })
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        // On vérifie les identifiants
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // On génère le token JWT
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        return ResponseEntity.ok(new JwtResponse(jwt));
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<Utilisateur> inscription(@RequestBody Utilisateur utilisateur) {
+    @Operation(summary = "Inscription de l'utilisateur", description = "Permet à un utilisateur de s'inscrire")
+    public ResponseEntity<UtilisateurDTO> inscription(@RequestBody UtilisateurDTO utilisateur) {
         // Comme mis dans le Service, le role par défaut sera LECTEUR
-        return ResponseEntity.ok(utilisateurService.inscrire(utilisateur));
+        return ResponseEntity.ok(utilisateurService.save(utilisateur));
     }
 
     //L'admin peut voir tous les LECTEUR et BIBLIOTHECAIRE
+    @Operation(summary = "Récuperation des utilisateurs", description = "Récupére tout les utilisateurs. Réservé à l'ADMIN.")
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Utilisateur>> getAllUtilisateurs() {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<UtilisateurDTO>> getAllUtilisateurs() {
         return ResponseEntity.ok(utilisateurService.findAll());
     }
 
     //Ici, l'amdin peut voir le profile de n'importe qui, l'utilisateur propriétaire peut acceder à son profile
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
-    public ResponseEntity<Utilisateur> getProfil(@PathVariable Integer id) {
-        return ResponseEntity.ok(utilisateurService.getProfil(id));
+    @Operation(summary = "Consulter un profil", description = "Un utilisateur peut voir son propre profil. L'ADMIN peut voir n'importe lequel.")
+    @SecurityRequirement(name = "BearerAuth")
+    @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.principal.id")
+    public ResponseEntity<UtilisateurDTO> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok(utilisateurService.findById(id));
     }
 
     //L'admin pour l'utilisateur propriétaire peuvent modifier le profile
+    @Operation(summary = "Modifier un profil", description = "Un utilisateur peut modifier ses données. L'ADMIN peut modifier n'importe quel compte.")
+    @SecurityRequirement(name = "BearerAuth")
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
-    public ResponseEntity<Utilisateur> modifierProfil(
+    @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.principal.id")
+    public ResponseEntity<UtilisateurDTO> modifierProfil(
             @PathVariable Integer id,
-            @RequestBody Utilisateur nouveauxDetails) {
+            @RequestBody UtilisateurDTO utilisateurDTO) {
 
-        Utilisateur utilisateurMisAJour = utilisateurService.modifierProfil(id, nouveauxDetails);
+        UtilisateurDTO utilisateurMisAJour = utilisateurService.modifierProfil(id, utilisateurDTO);
         return ResponseEntity.ok(utilisateurMisAJour);
     }
 
     // Seul l'admin peut modifier un role, le passer de LECTEUR à BIBLIOTHECAIRE
+    @Operation(summary = "Changer le rôle d'un utilisateur", description = "Permet de changer le role d'un utilisateur. Réservé à l'ADMIN.")
+    @SecurityRequirement(name = "BearerAuth")
     @PatchMapping("/{id}/role")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Utilisateur> changerRole(@PathVariable Integer id, @RequestParam Integer roleId) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<UtilisateurDTO> changerRole(@PathVariable Integer id, @RequestParam Integer roleId) {
         return ResponseEntity.ok(utilisateurService.changerRole(id, roleId));
     }
 
     //Pour supprimer un Utilisateur, seul l'admin le peut
+    @Operation(summary = "Supprimer un utilisateur", description = "Suppression définitive d'un compte. Réservé à l'ADMIN.")
+    @SecurityRequirement(name = "BearerAuth")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> supprimerUtilisateur(@PathVariable Integer id) {
-        utilisateurService.supprimerCompte(id);
+        utilisateurService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

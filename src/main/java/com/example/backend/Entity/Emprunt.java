@@ -15,7 +15,7 @@ public class Emprunt {
     private LocalDate dateEmprunt;
     @NotNull
     private LocalDate dateRetourPrevu;
-    @NotNull
+
     private LocalDate dateRetourEffectif;
 
     @ManyToOne
